@@ -34,7 +34,12 @@ export function AssignmentList({
             </Link>
           </article>
         );
-      }) : <p className="empty">Belum ada latihan di kelas ini.</p>}
+      }) : (
+        <p className="empty empty-rich">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" aria-hidden="true"><path d="M7 3h7l4 4v14H6V3h1Zm6 0v5h5M9 12h6m-6 4h6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          Belum ada latihan di kelas ini.{isTeacher ? " Buat latihan pertama dari tombol di atas." : " Jawaban akan muncul di sini saat pengajar menambahkan latihan."}
+        </p>
+      )}
     </div>
   );
 }

@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { Breadcrumb } from "@/components/breadcrumb";
+import { Flash } from "@/components/flash";
 import { notFound } from "next/navigation";
 import { gradeSubmission } from "@/app/actions";
 import { FileList } from "@/components/file-list";
@@ -6,16 +8,23 @@ import { attachmentMetadata } from "@/lib/attachments";
 import { ActionForm } from "@/components/action-form";
 import { getTeachingCourse, requireUser } from "@/lib/access";
 import { db } from "@/lib/db";
-import { assignmentPath, displayDate } from "@/lib/presentation";
+import { assignmentPath, coursePath, displayDate } from "@/lib/presentation";
 
 export const metadata = { title: "Penilaian jawaban" };
 
 type Params = { courseId: string; assignmentId: string; submissionId: string };
 
-export default async function ReviewPage({ params }: { params: Promise<Params> }) {
+export default async function ReviewPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<Params>;
+  searchParams: Promise<{ ok?: string }>;
+}) {
   const { courseId, assignmentId, submissionId } = await params;
+  const { ok } = await searchParams;
   const user = await requireUser();
-  await getTeachingCourse(courseId, user);
+  const course = await getTeachingCourse(courseId, user);
   const submission = await db.submission.findFirst({
     where: { id: submissionId, assignmentId, assignment: { courseId } },
     include: { assignment: true, student: { select: { name: true } }, files: { select: attachmentMetadata } },
@@ -24,7 +33,13 @@ export default async function ReviewPage({ params }: { params: Promise<Params> }
 
   return (
     <>
-      <Link className="back-link" href={assignmentPath(courseId, assignmentId)}>← Kembali ke latihan</Link>
+      <Breadcrumb items={[
+        { href: "/kelas", label: "Kelas saya" },
+        { href: coursePath(courseId), label: course.title },
+        { href: coursePath(courseId) + "/latihan", label: "Latihan" },
+        { href: assignmentPath(courseId, assignmentId), label: submission.assignment.title },
+      ]} />
+      <Flash ok={ok} />
       <header className="page-heading">
         <p className="eyebrow accent">{submission.assignment.title}</p>
         <h1>Penilaian jawaban</h1>

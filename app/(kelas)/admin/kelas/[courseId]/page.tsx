@@ -2,15 +2,24 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { enrollStudent, removeStudent } from "@/app/admin-actions";
 import { ActionForm } from "@/components/action-form";
+import { Breadcrumb } from "@/components/breadcrumb";
 import { CourseForm } from "@/components/course-form";
+import { Flash } from "@/components/flash";
 import { requireAdmin } from "@/lib/access";
 import { db } from "@/lib/db";
 
 export const metadata = { title: "Administrasi kelas" };
 
-export default async function AdminCoursePage({ params }: { params: Promise<{ courseId: string }> }) {
+export default async function AdminCoursePage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ courseId: string }>;
+  searchParams: Promise<{ ok?: string }>;
+}) {
   await requireAdmin();
   const { courseId } = await params;
+  const { ok } = await searchParams;
   const [course, teachers, candidates] = await Promise.all([
     db.course.findUnique({
       where: { id: courseId },
@@ -41,7 +50,12 @@ export default async function AdminCoursePage({ params }: { params: Promise<{ co
 
   return (
     <>
-      <Link className="back-link" href="/admin">← Kembali ke dasbor admin</Link>
+      <Breadcrumb items={[
+        { href: "/admin", label: "Dasbor admin" },
+        { href: "/admin/kelas", label: "Kelas" },
+        { href: "/admin/kelas/" + courseId, label: course.title },
+      ]} />
+      <Flash ok={ok} />
       <header className="page-heading">
         <p className="eyebrow accent">Administrasi kelas</p>
         <h1>{course.title}</h1>
@@ -65,7 +79,7 @@ export default async function AdminCoursePage({ params }: { params: Promise<{ co
       </div>
       <section className="section" aria-labelledby="progres-admin">
         <div className="section-heading"><h2 id="progres-admin">Progres peserta</h2></div>
-        <div className="panel table-wrap">
+        <div className="panel table-wrap" tabIndex={0} role="region" aria-label="Tabel progres peserta">
           <table>
             <thead><tr><th scope="col">Peserta</th><th scope="col">Dikumpulkan</th><th scope="col">Dinilai</th><th scope="col">Penempatan</th></tr></thead>
             <tbody>
