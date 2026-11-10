@@ -51,7 +51,7 @@ export default async function CoursePage({ params, searchParams }: { params: Pro
         {isTeacher && <Link className="button on-banner" href={coursePath(courseId) + "/latihan/baru"}><span aria-hidden="true">+</span> Buat latihan</Link>}
         {isTeacher && <div className="banner-viz"><Donut value={graded} total={submissions.length} label="Jawaban dinilai" /></div>}
       </header>
-      {isTeacher && <div className="section-heading"><p className="eyebrow">Pengumpulan 14 hari terakhir</p><Sparkline counts={daily} /></div>}
+      {isTeacher && <div className="sparkline-wrap"><p className="eyebrow accent">Pengumpulan 14 hari terakhir</p><Sparkline counts={daily} /></div>}
       <div className="stats" aria-label="Ringkasan kelas">
         {counts.map(([label, count]) => <article key={label} className="stat"><span>{label}</span><strong>{count}</strong></article>)}
       </div>
