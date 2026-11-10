@@ -35,5 +35,5 @@ export async function createMaterial(
   });
   const path = coursePath(courseId) + "/materi";
   revalidatePath(path);
-  redirect(path + "/" + material.id);
+  redirect(path + "/" + material.id + "?ok=material");
 }

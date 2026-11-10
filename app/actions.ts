@@ -60,7 +60,7 @@ export async function createAssignment(courseId: string, _state: FormState, form
   const assignment = await db.assignment.create({ data: { courseId, ...fields.data } });
   revalidatePath(coursePath(courseId));
   revalidatePath(coursePath(courseId) + "/latihan");
-  redirect(assignmentPath(courseId, assignment.id));
+  redirect(assignmentPath(courseId, assignment.id) + "?ok=assignment");
 }
 
 const answerSchema = z.string().trim().max(5000);
@@ -108,7 +108,7 @@ export async function submitAnswer(courseId: string, assignmentId: string, _stat
   revalidatePath(coursePath(courseId));
   revalidatePath(coursePath(courseId) + "/latihan");
   revalidatePath(path);
-  redirect(path);
+  redirect(path + "?ok=submitted");
 }
 
 const gradeSchema = z.object({
@@ -136,5 +136,5 @@ export async function gradeSubmission(courseId: string, assignmentId: string, su
   revalidatePath(coursePath(courseId));
   revalidatePath(coursePath(courseId) + "/latihan");
   revalidatePath(path);
-  redirect(path);
+  redirect(path + "?ok=graded");
 }

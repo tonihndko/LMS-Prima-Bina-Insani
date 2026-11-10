@@ -15,3 +15,13 @@ export function coursePath(courseId: string) {
 export function assignmentPath(courseId: string, assignmentId: string) {
   return coursePath(courseId) + "/latihan/" + assignmentId;
 }
+
+export function lastNDays(n: number) {
+  const today = new Date();
+  return Array.from({ length: n }, (_, index) => {
+    const day = new Date(today);
+    day.setDate(today.getDate() - (n - 1 - index));
+    day.setHours(0, 0, 0, 0);
+    return day;
+  });
+}
