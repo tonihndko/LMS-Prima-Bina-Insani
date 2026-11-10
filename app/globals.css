@@ -40,11 +40,9 @@ small { font-size: .84rem; }
 .brand > span:last-child { font-size: .95rem; color: var(--pine); }
 .brand small { display: block; margin-top: 2px; color: var(--muted); font-weight: 500; letter-spacing: 0; font-size: .78rem; }
 .brand-logo { height: 34px; width: auto; max-width: 100%; flex: 0 0 auto; }
-.brand-dark { color: #fff; }
-.brand-dark > span:last-child { color: #fff; font-size: 1.05rem; }
-.brand-dark small { color: #cbd5e1 !important; }
-.brand-mark { width: 39px; height: 39px; display: grid; place-items: center; border-radius: 12px; color: var(--pine); background: var(--amber); flex: 0 0 auto; }
-.brand-mark svg { width: 26px; height: 26px; }
+.brand-dark { display: grid; justify-items: start; gap: 12px; color: #fff; }
+.brand-dark span.brand-dark-text { font-size: .95rem; letter-spacing: .01em; color: #cbd5e1; }
+.brand-logo-plate { display: inline-block; padding: 12px 18px; background: #fff; border-radius: 12px; }
 .nav-link { display: flex; align-items: center; gap: 11px; padding: 12px 14px; border: 1px solid transparent; border-radius: 12px; background: transparent; color: #475569; font-size: .93rem; font-weight: 650; }
 .nav-link:hover { background: var(--mist); color: var(--primary-dark); }
 .nav-link svg { width: 20px; height: 20px; color: var(--primary); }
