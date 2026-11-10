@@ -14,7 +14,7 @@ export default async function LoginPage() {
   return (
     <main id="konten" className="login-layout">
       <section className="login-art" aria-label={"Tentang " + PLATFORM_NAME}>
-        <Brand href="/masuk" />
+        <Brand href="/masuk" variant="dark" />
         <div className="login-story">
           <p className="eyebrow">Kelas dan progres</p>
           <h1>Latihan kelas,<br /> dalam satu ruang.</h1>
