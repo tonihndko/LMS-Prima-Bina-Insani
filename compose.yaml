@@ -1,0 +1,18 @@
+services:
+  database:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: primecaps
+      POSTGRES_PASSWORD: primecaps_local
+      POSTGRES_DB: primecaps
+    ports:
+      - "127.0.0.1:15432:5432"
+    volumes:
+      - prime-caps-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U primecaps -d primecaps"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+volumes:
+  prime-caps-postgres:
