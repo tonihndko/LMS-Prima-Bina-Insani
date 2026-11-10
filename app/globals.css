@@ -147,6 +147,21 @@ tbody td { font-variant-numeric: tabular-nums; }
 .demo-access dt { color: var(--muted); }
 .demo-access dd { margin: 0; overflow-wrap: anywhere; }
 
+/* Entrance animation — sekali saat load, hormati reduced-motion */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.login-anim { animation: fadeUp .6s ease-out both; }
+.login-art::after { animation: fadeIn 1s ease-out .6s both; }
+@media (prefers-reduced-motion: reduce) {
+  .login-anim, .login-art::after { animation: none; }
+}
+
 @media (max-width: 800px) {
   .app-shell { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto 1fr; }
   .sidebar { position: static; height: auto; display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 14px; padding: 11px 17px; }

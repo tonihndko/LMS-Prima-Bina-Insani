@@ -16,17 +16,17 @@ export default async function LoginPage() {
       <section className="login-art" aria-label={"Tentang " + PLATFORM_NAME}>
         <Brand href="/masuk" variant="dark" />
         <div className="login-story">
-          <p className="eyebrow">Kelas dan progres</p>
-          <h1>Latihan kelas,<br /> dalam satu ruang.</h1>
-          <p>Buka latihan, kumpulkan jawaban, dan pantau hasil belajar.</p>
-          <div className="story-track" aria-hidden="true">
+          <p className="eyebrow login-anim" style={{ animationDelay: "100ms" }}>Kelas dan progres</p>
+          <h1 className="login-anim" style={{ animationDelay: "200ms" }}>Latihan kelas,<br /> dalam satu ruang.</h1>
+          <p className="login-anim" style={{ animationDelay: "420ms" }}>Buka latihan, kumpulkan jawaban, dan pantau hasil belajar.</p>
+          <div className="story-track login-anim" style={{ animationDelay: "520ms" }} aria-hidden="true">
             <span><b>01</b> Latihan</span><span><b>02</b> Jawaban</span><span><b>03</b> Penilaian</span>
           </div>
         </div>
-        <p className="login-caption">{PLATFORM_NAME.toUpperCase()} / RUANG KELAS DEMO</p>
+        <p className="login-caption login-anim" style={{ animationDelay: "700ms" }}>{PLATFORM_NAME.toUpperCase()} / RUANG KELAS DEMO</p>
       </section>
       <section className="login-body">
-        <div className="login-card">
+        <div className="login-card login-anim" style={{ animationDelay: "350ms" }}>
           <p className="eyebrow accent">Akun kelas</p>
           <h2>Masuk ke kelas</h2>
           <p className="muted">Gunakan akun admin, pengajar, atau peserta.</p>

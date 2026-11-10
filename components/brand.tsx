@@ -6,11 +6,11 @@ import { PLATFORM_NAME } from "@/lib/brand";
 export function Brand({ href, variant = "light" }: { href: string; variant?: "light" | "dark" }) {
   if (variant === "dark") {
     return (
-      <Link className="brand brand-dark" href={href}>
+      <Link className="brand brand-dark login-anim" href={href}>
         <span className="brand-logo-plate">
           <img className="brand-logo" src="/logo-prima-bina-insani.svg" alt={PLATFORM_NAME} />
         </span>
-        <span className="brand-dark-text">Ruang belajar</span>
+        <span className="brand-dark-text">Learning Management System</span>
       </Link>
     );
   }
