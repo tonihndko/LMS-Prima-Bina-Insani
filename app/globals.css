@@ -1,3 +1,31 @@
+/* Tailwind v4 tanpa preflight — utilities & theme saja, agar CSS vanilla existing tidak rusak */
+/* Urutan layer eksplisit: base paling lemah, utilities menang atas CSS vanilla di @layer base */
+@layer properties, base, theme, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+@import "tw-animate-css";
+
+/* Token shadcn dipetakan ke palet existing (dipakai komponen components/ui) */
+@theme inline {
+  --color-background: #fff;
+  --color-foreground: var(--ink);
+  --color-primary: var(--primary);
+  --color-primary-foreground: #fff;
+  --color-secondary: var(--mist);
+  --color-secondary-foreground: var(--primary-dark);
+  --color-muted: #f3f4f6;
+  --color-muted-foreground: var(--muted);
+  --color-accent: var(--mist);
+  --color-accent-foreground: var(--primary-dark);
+  --color-destructive: #dc2626;
+  --color-destructive-foreground: oklch(0.985 0 0);
+  --color-border: var(--line);
+  --color-input: #d1d5db;
+  --color-ring: var(--primary);
+  --radius: 1rem;
+}
+
+@layer base {
 :root {
   color-scheme: light;
   /* Palet mengikuti primabinainsani.com */
@@ -64,6 +92,10 @@ small { font-size: .84rem; }
 .banner-copy { min-width: 0; }
 .eyebrow { margin: 0 0 9px; font-size: .73rem; font-weight: 750; letter-spacing: .11em; text-transform: uppercase; color: #fde68a; }
 .eyebrow.accent { color: #1d4ed8; }
+/* Di kartu login (latar abu) eyebrow perlu kontras lebih tinggi */
+.login-card > .eyebrow.accent { color: var(--primary); }
+/* Logo di atas kartu login diberi ruang sebelum eyebrow */
+.login-body .brand { margin-bottom: 18px; }
 .banner-copy > p:last-child { color: #e2e8f0; margin-top: 10px; max-width: 57ch; }
 .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 15px; }
 .stat { display: grid; align-content: start; gap: 3px; min-width: 0; padding: 15px 18px; background: var(--paper); border: 1px solid var(--line); border-radius: 14px; }
@@ -283,4 +315,5 @@ tbody td { font-variant-numeric: tabular-nums; }
   .portal-nav .nav-link:focus-visible { outline-offset: -2px; }
   .portal-nav .nav-back { justify-content: center; min-width: 36px; min-height: 36px; padding: 6px; }
   .portal-nav .nav-back span { display: none; }
+}
 }
