@@ -1,25 +1,22 @@
-"use client";
-
-import { Typewriter as AuthTypewriter, PasswordInput } from "@/components/ui/auth-fuse";
+import { Input, PasswordInput, Typewriter } from "@/components/ui/auth-fuse";
 import { ActionForm } from "@/components/action-form";
-import { PLATFORM_NAME } from "@/lib/brand";
+import styles from "@/app/masuk/login.module.css";
 
-// Esensi login page lama dipertahankan: hero gradient biru→navy, logo klien
-// di plate putih, story track, caption — dipadukan gaya shadcn/Tailwind.
 export function AuthHero() {
   return (
-    <section className="login-art" aria-label={"Tentang " + PLATFORM_NAME}>
-      <div className="login-story">
-        <p className="eyebrow login-anim" style={{ animationDelay: "100ms" }}>Kelas dan progres</p>
-        <h1 className="login-anim" style={{ animationDelay: "200ms" }}>
-          <AuthTypewriter text={["Latihan kelas,", "dalam satu ruang."]} speed={70} />
-        </h1>
-        <p className="login-anim" style={{ animationDelay: "420ms" }}>Buka latihan, kumpulkan jawaban, dan pantau hasil belajar.</p>
-        <div className="story-track login-anim" style={{ animationDelay: "520ms" }} aria-hidden="true">
-          <span><b>01</b> Latihan</span><span><b>02</b> Jawaban</span><span><b>03</b> Penilaian</span>
-        </div>
+    <section className={styles.hero} aria-labelledby="login-hero-title">
+      <div className={styles.heroCopy}>
+        <h2 id="login-hero-title">
+          Belajar di{" "}
+          <span className={styles.heroLine}>
+            <span className={styles.heroText}>satu ruang.</span>
+            <span className={styles.heroTyping} aria-hidden="true">
+              <Typewriter text="satu ruang." speed={65} cursor="" />
+            </span>
+          </span>
+        </h2>
+        <p>Akses materi, kumpulkan latihan, dan pantau progres belajarmu.</p>
       </div>
-      <p className="login-caption login-anim" style={{ animationDelay: "700ms" }}>{PLATFORM_NAME.toUpperCase()} / RUANG KELAS DEMO</p>
     </section>
   );
 }
@@ -31,26 +28,23 @@ interface AuthCardProps {
 
 export function AuthCard({ action, demoAccounts }: AuthCardProps) {
   return (
-    <div className="login-card login-anim" style={{ animationDelay: "350ms" }}>
-      <p className="eyebrow accent">Akun kelas</p>
-      <h2>Masuk ke kelas</h2>
-      <p className="muted">Gunakan akun admin, pengajar, atau peserta.</p>
+    <div className={styles.card}>
+      <h1 id="login-title">Masuk ke LMS</h1>
+      <p className={styles.intro}>Gunakan akun admin, pengajar, atau peserta.</p>
       <ActionForm action={action} label="Masuk">
-        <div className="grid gap-2">
-          <label htmlFor="email">Email
-            <input id="email" name="email" type="email" autoComplete="username" required placeholder="nama@contoh.com" />
-          </label>
-        </div>
+        <label htmlFor="email">Email
+          <Input id="email" name="email" type="email" autoComplete="username" required placeholder="nama@contoh.com" />
+        </label>
         <PasswordInput
           name="password"
           label="Kata sandi"
           required
           autoComplete="current-password"
           maxLength={128}
-          className="min-h-[43px]"
+          placeholder="Masukkan kata sandi"
         />
       </ActionForm>
-      <details className="demo-access">
+      <details className={styles.demo}>
         <summary>Lihat akun demo lokal</summary>
         <dl>
           <dt>Admin</dt><dd><code>{demoAccounts.admin}</code></dd>

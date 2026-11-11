@@ -88,14 +88,10 @@ small { font-size: .84rem; }
 .workspace { min-width: 0; padding: 42px clamp(20px, 4vw, 58px) 60px; }
 .container { max-width: 1140px; margin: 0 auto; }
 .course-banner { position: relative; overflow: hidden; isolation: isolate; display: flex; align-items: end; justify-content: space-between; gap: 24px; padding: clamp(23px, 4vw, 38px); min-height: 197px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: #ffffff; border-radius: 23px; }
-.course-banner::after, .login-art::after { content: ""; position: absolute; z-index: -1; width: 410px; height: 410px; border: 1px solid #fbbf2433; border-radius: 42%; right: -138px; top: -246px; box-shadow: 0 0 0 28px #fbbf241a, 0 0 0 55px #fbbf2415, 0 0 0 84px #fbbf2410; transform: rotate(-25deg); pointer-events: none; }
+.course-banner::after { content: ""; position: absolute; z-index: -1; width: 410px; height: 410px; border: 1px solid #fbbf2433; border-radius: 42%; right: -138px; top: -246px; box-shadow: 0 0 0 28px #fbbf241a, 0 0 0 55px #fbbf2415, 0 0 0 84px #fbbf2410; transform: rotate(-25deg); pointer-events: none; }
 .banner-copy { min-width: 0; }
 .eyebrow { margin: 0 0 9px; font-size: .73rem; font-weight: 750; letter-spacing: .11em; text-transform: uppercase; color: #fde68a; }
 .eyebrow.accent { color: #1d4ed8; }
-/* Di kartu login (latar abu) eyebrow perlu kontras lebih tinggi */
-.login-card > .eyebrow.accent { color: var(--primary); }
-/* Logo di atas kartu login diberi ruang sebelum eyebrow */
-.login-body .brand { margin-bottom: 18px; }
 .banner-copy > p:last-child { color: #e2e8f0; margin-top: 10px; max-width: 57ch; }
 .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 15px; }
 .stat { display: grid; align-content: start; gap: 3px; min-width: 0; padding: 15px 18px; background: var(--paper); border: 1px solid var(--line); border-radius: 14px; }
@@ -158,40 +154,14 @@ tbody td { font-variant-numeric: tabular-nums; }
 .error-page .panel { max-width: 640px; }
 .error-page p, .error-page a { margin-top: 10px; }
 
-.login-layout { min-height: 100vh; display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); }
-.login-art { position: relative; isolation: isolate; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; gap: 30px; padding: clamp(22px, 5vw, 62px); color: #e2e8f0; background: linear-gradient(135deg, #1d4ed8, #0f172a); }
-.login-art::after { right: -110px; top: auto; bottom: -170px; width: 480px; height: 480px; }
-.login-story { max-width: 580px; }
-.login-story h1 { font-size: clamp(2.45rem, 5.4vw, 5.4rem); }
-.login-story > p:last-of-type { max-width: 32ch; margin-top: 18px; color: #cbd5e1; font-size: clamp(.97rem, 2vw, 1.14rem); }
-.story-track { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 25px; }
-.story-track span { display: inline-flex; align-items: center; gap: 7px; border: 1px solid #475569; border-radius: 8px; padding: 6px 9px; font-size: .79rem; color: #e2e8f0; }
-.story-track b { color: var(--lime); font-size: .7rem; }
-.login-caption { font-size: .68rem; color: #94a3b8; letter-spacing: .08em; font-weight: 680; }
-.login-body { display: grid; place-items: center; padding: 34px clamp(20px, 5vw, 60px); }
-.login-card { width: 100%; max-width: 390px; }
-.login-card h2 { font-size: clamp(1.7rem, 4vw, 2.4rem); margin-bottom: 9px; }
-.login-card form { margin-top: 22px; }
-.login-card button { width: 100%; }
-.demo-access { margin-top: 21px; border: 1px solid var(--line); border-radius: 11px; padding: 11px 13px; font-size: .87rem; background: var(--paper); }
-.demo-access summary { cursor: pointer; color: #1d4ed8; font-weight: 670; }
-.demo-access dl { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 3px 12px; margin: 10px 0 0; }
-.demo-access dt { color: var(--muted); }
-.demo-access dd { margin: 0; overflow-wrap: anywhere; }
-
 /* Entrance animation — sekali saat load, hormati reduced-motion */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(14px); }
   to { opacity: 1; transform: none; }
 }
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
 .login-anim { animation: fadeUp .6s ease-out both; }
-.login-art::after { animation: fadeIn 1s ease-out .6s both; }
 @media (prefers-reduced-motion: reduce) {
-  .login-anim, .login-art::after { animation: none; }
+  .login-anim { animation: none; }
 }
 
 @media (max-width: 800px) {
@@ -200,12 +170,6 @@ tbody td { font-variant-numeric: tabular-nums; }
   .sidebar nav, .sidebar .demo-indicator, .sidebar .account { display: none; }
   .sidebar-foot { margin: 0; }
   .workspace { padding-top: 19px; }
-  .login-layout { grid-template-columns: minmax(0, 1fr); }
-  .login-art { min-height: auto; gap: 20px; }
-  .login-caption { display: none; }
-  .login-story h1 br { display: none; }
-  .login-story > p:last-of-type { margin-top: 8px; }
-  .story-track { margin-top: 13px; }
 }
 @media (max-width: 540px) {
   .course-banner { align-items: start; flex-direction: column; gap: 15px; }
@@ -217,7 +181,6 @@ tbody td { font-variant-numeric: tabular-nums; }
   .task-main { flex: 1 0 calc(100% - 51px); }
   .task-row .button { margin-left: auto; }
   .review-layout { grid-template-columns: minmax(0, 1fr); }
-  .demo-access dl { gap: 3px 8px; }
   .button.compact { min-height: 40px; padding: 8px 12px; }
   .banner-viz { display: none; }
 }
