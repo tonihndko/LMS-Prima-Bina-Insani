@@ -2,6 +2,8 @@
 
 Aplikasi tugas besar individu untuk memantau pengumpulan latihan dan penilaian. Kelas sintetis memperagakan alur admin, pengajar, dan peserta. [Situs mitra](https://www.primabinainsani.com/).
 
+[PRD keseluruhan versi 2.0](docs/PRD-Prima-Bina-Insani.md) memuat lingkup produk, status implementasi, hak akses, kriteria penerimaan, rencana DS/ML/DL, serta tahap pemenuhan project plan ASAH.
+
 ## Menjalankan demo
 
 Siapkan Node.js 22.12+ dan PostgreSQL. Dengan Docker Desktop yang sudah berjalan, gunakan perintah berikut dari folder proyek.
