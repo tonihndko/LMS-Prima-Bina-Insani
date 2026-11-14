@@ -16,13 +16,19 @@ export default async function CoursePage({ params, searchParams }: { params: Pro
   const course = await getCourse(courseId, user);
   const isTeacher = course.teacherId === user.id;
 
-  const [assignments, enrollments] = await Promise.all([
+  const [assignments, enrollments, materialCount, completions, openFollowUps] = await Promise.all([
     listAssignments(courseId, isTeacher ? undefined : user.id),
     isTeacher ? db.enrollment.findMany({
       where: { courseId },
       select: { studentId: true, student: { select: { name: true } } },
       orderBy: { student: { name: "asc" } },
     }) : [],
+    db.material.count({ where: { courseId } }),
+    db.materialCompletion.findMany({
+      where: { material: { courseId }, ...(isTeacher ? {} : { studentId: user.id }) },
+      select: { studentId: true },
+    }),
+    isTeacher ? db.followUp.findMany({ where: { courseId, status: "OPEN" }, select: { studentId: true } }) : [],
   ]);
 
   const submissions = assignments.flatMap((assignment) => assignment.submissions);
@@ -37,6 +43,7 @@ export default async function CoursePage({ params, searchParams }: { params: Pro
     ["Latihan tersedia", assignments.length],
     ["Jawaban terkumpul", submissions.length],
     ["Jawaban dinilai", graded],
+    ...(isTeacher ? [] : [["Materi selesai", completions.length + " / " + materialCount]]),
   ];
 
   return (
@@ -66,18 +73,20 @@ export default async function CoursePage({ params, searchParams }: { params: Pro
           <div className="section-heading"><p className="eyebrow accent">Pemantauan</p><h2 id="progres">Progres peserta</h2></div>
           <div className="panel table-wrap" tabIndex={0} role="region" aria-label="Tabel progres peserta">
             <table>
-              <thead><tr><th scope="col">Peserta</th><th scope="col">Dikumpulkan</th><th scope="col">Dinilai</th></tr></thead>
+              <thead><tr><th scope="col">Peserta</th><th scope="col">Materi selesai</th><th scope="col">Dikumpulkan</th><th scope="col">Dinilai</th><th scope="col">Tindak lanjut</th></tr></thead>
               <tbody>
                 {enrollments.length ? enrollments.map(({ studentId, student }) => {
                   const work = submissions.filter((submission) => submission.studentId === studentId);
                   return (
                     <tr key={studentId}>
-                      <th scope="row">{student.name}</th>
+                      <th scope="row"><Link className="inline-link" href={coursePath(courseId) + "/peserta/" + studentId}>{student.name}</Link></th>
+                      <td>{completions.filter((done) => done.studentId === studentId).length} / {materialCount}</td>
                       <td>{work.length} / {assignments.length}</td>
                       <td>{work.filter(({ score }) => score !== null).length} / {assignments.length}</td>
+                      <td>{openFollowUps.filter((item) => item.studentId === studentId).length || "–"}</td>
                     </tr>
                   );
-                }) : <tr><td colSpan={3}>Belum ada peserta di kelas ini.</td></tr>}
+                }) : <tr><td colSpan={5}>Belum ada peserta di kelas ini.</td></tr>}
               </tbody>
             </table>
           </div>

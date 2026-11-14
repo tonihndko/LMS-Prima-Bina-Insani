@@ -25,12 +25,13 @@ export default async function AdminCoursePage({
       where: { id: courseId },
       include: {
         teacher: { select: { name: true, active: true } },
-        _count: { select: { assignments: true } },
+        _count: { select: { assignments: true, materials: true } },
         enrollments: {
           orderBy: { student: { name: "asc" } },
           include: { student: { select: {
             name: true, active: true,
             submissions: { where: { assignment: { courseId } }, select: { score: true } },
+            completions: { where: { material: { courseId } }, select: { materialId: true } },
           } } },
         },
       },
@@ -81,17 +82,18 @@ export default async function AdminCoursePage({
         <div className="section-heading"><h2 id="progres-admin">Progres peserta</h2></div>
         <div className="panel table-wrap" tabIndex={0} role="region" aria-label="Tabel progres peserta">
           <table>
-            <thead><tr><th scope="col">Peserta</th><th scope="col">Dikumpulkan</th><th scope="col">Dinilai</th><th scope="col">Penempatan</th></tr></thead>
+            <thead><tr><th scope="col">Peserta</th><th scope="col">Materi selesai</th><th scope="col">Dikumpulkan</th><th scope="col">Dinilai</th><th scope="col">Penempatan</th></tr></thead>
             <tbody>
               {course.enrollments.map(({ student, studentId }) => (
                 <tr key={studentId}>
                   <th scope="row">{student.name}{!student.active && " (nonaktif)"}</th>
+                  <td>{student.completions.length} / {course._count.materials}</td>
                   <td>{student.submissions.length} / {course._count.assignments}</td>
                   <td>{student.submissions.filter(({ score }) => score !== null).length} / {course._count.assignments}</td>
                   <td><form action={removeStudent.bind(null, courseId, studentId)}><button className="button secondary compact" type="submit">Keluarkan dari kelas</button></form></td>
                 </tr>
               ))}
-              {!course.enrollments.length && <tr><td colSpan={4}>Belum ada peserta di kelas ini.</td></tr>}
+              {!course.enrollments.length && <tr><td colSpan={5}>Belum ada peserta di kelas ini.</td></tr>}
             </tbody>
           </table>
         </div>

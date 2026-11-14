@@ -52,6 +52,11 @@ export default async function AssignmentPage({
         <p className="eyebrow accent">{course.title}</p>
         <h1>{assignment.title}</h1>
         {!isTeacher && <Status submission={ownSubmission} />}
+        {isTeacher && (
+          <div className="action-row">
+            <Link className="button secondary compact" href={assignmentPath(courseId, assignmentId) + "/ubah"}>Ubah latihan</Link>
+          </div>
+        )}
       </header>
       <section className="panel text-panel">
         <h2>Instruksi latihan</h2>

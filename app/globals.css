@@ -280,3 +280,12 @@ tbody td { font-variant-numeric: tabular-nums; }
   .portal-nav .nav-back span { display: none; }
 }
 }
+
+/* Ubah materi, tindak lanjut, dan aksi baris */
+.file-remove { display: grid; gap: 8px; border: 1px solid var(--line); border-radius: 9px; padding: 11px 13px; }
+.file-remove legend { padding: 0 4px; font-size: .92rem; font-weight: 650; }
+.stack-form .check-row { display: flex; align-items: center; gap: 8px; font-weight: 400; }
+.stack-form .check-row input { width: auto; min-height: 0; }
+.note-box { margin-top: 11px; padding: 9px 12px; background: #fef3c7; border: 1px solid #fde68a; border-radius: 9px; color: #92400e; font-size: .88rem; }
+.action-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 13px; }
+.action-row form { display: contents; }
