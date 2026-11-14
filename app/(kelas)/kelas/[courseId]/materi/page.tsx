@@ -12,7 +12,10 @@ export default async function MaterialsPage({ params }: { params: Promise<{ cour
   const materials = await db.material.findMany({
     where: { courseId },
     orderBy: [{ createdAt: "desc" }, { id: "asc" }],
-    select: { id: true, title: true, createdAt: true, _count: { select: { files: true } } },
+    select: {
+      id: true, title: true, createdAt: true, _count: { select: { files: true } },
+      completions: { where: { studentId: user.id }, select: { studentId: true } },
+    },
   });
   const path = coursePath(courseId) + "/materi";
 
@@ -29,6 +32,9 @@ export default async function MaterialsPage({ params }: { params: Promise<{ cour
               <h3><Link href={path + "/" + material.id}>{material.title}</Link></h3>
               <p>{material._count.files} berkas · {displayDate(material.createdAt)}</p>
             </div>
+            {user.role === "STUDENT" && (material.completions.length
+              ? <span className="status status-done">Selesai</span>
+              : <span className="status status-new">Belum selesai</span>)}
             <Link className="button secondary compact" href={path + "/" + material.id}>Lihat materi</Link>
           </article>
         )) : <p className="empty">Belum ada materi di kelas ini.</p>}

@@ -1,0 +1,196 @@
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  min-height: 100svh;
+  background: var(--paper);
+}
+
+.body {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  padding: clamp(24px, 3.5vw, 52px);
+}
+
+.brand {
+  display: grid;
+  justify-items: start;
+  gap: 8px;
+}
+
+.brand :global(.brand-logo) {
+  height: 40px;
+}
+
+.brand > span, .support {
+  color: var(--muted);
+  font-size: .82rem;
+}
+
+.content {
+  display: grid;
+  place-items: center;
+  padding-block: clamp(40px, 7vh, 80px);
+}
+
+.card {
+  width: min(100%, 392px);
+}
+
+.card h1 {
+  color: var(--pine);
+  font-size: clamp(2rem, 3.4vw, 2.625rem);
+  letter-spacing: -.045em;
+}
+
+.intro {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: .92rem;
+}
+
+.card :global(.stack-form) {
+  gap: 16px;
+  margin-top: 28px;
+}
+
+.card :global(.stack-form) > [aria-live]:empty {
+  position: absolute;
+}
+
+.card :global(.stack-form) label {
+  color: var(--pine);
+  font-size: .875rem;
+}
+
+.card :global(.stack-form) input {
+  min-height: 48px;
+  padding-inline: 13px;
+  border-color: #d7dfe9;
+  border-radius: 10px;
+  background: #fff;
+  font-size: 1rem;
+  box-shadow: none;
+}
+
+.card :global(.stack-form) input[name="password"] {
+  padding-inline-end: 48px;
+}
+
+.card :global(.stack-form) input:focus-visible {
+  border-color: var(--primary);
+  outline: 2px solid #bfdbfe;
+  outline-offset: 1px;
+}
+
+.card :global(.stack-form) button[type="button"] {
+  inset-block: 4px;
+  inset-inline-end: 4px;
+  height: auto;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: #5b6779;
+}
+
+.card :global(.stack-form) button[type="button"]:hover { background: var(--mist); }
+
+.card :global(.stack-form) button[type="button"]:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: -2px;
+}
+
+.card button[type="submit"] {
+  width: 100%;
+  min-height: 48px;
+  margin-top: 5px;
+}
+
+.demo {
+  margin-top: 24px;
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+  font-size: .82rem;
+}
+
+.demo summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 40px;
+  color: var(--primary-dark);
+  cursor: pointer;
+  font-weight: 650;
+  list-style: none;
+}
+
+.demo summary::-webkit-details-marker { display: none; }
+
+.demo summary::after {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border: solid currentColor;
+  border-width: 0 1.5px 1.5px 0;
+  margin-inline-end: 4px;
+  transform: translateY(-2px) rotate(45deg);
+}
+
+.demo[open] summary::after { transform: translateY(2px) rotate(225deg); }
+
+.demo dl {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 6px 14px;
+  margin: 7px 0 0;
+  border-radius: 10px;
+  padding: 12px;
+  background: #f4f7fb;
+}
+
+.demo dt { color: var(--muted); }
+.demo dd { margin: 0; overflow-wrap: anywhere; }
+
+.hero {
+  display: flex;
+  align-items: flex-end;
+  min-width: 0;
+  min-height: 540px;
+  margin: 16px 16px 16px 0;
+  border-radius: 20px;
+  padding: clamp(28px, 4vw, 64px);
+  background-color: #132341;
+  background-image: linear-gradient(180deg, transparent 35%, #0b193668 64%, #08152bef 100%), url("/kelas-pelatihan.webp");
+  background-size: cover;
+  background-position: center 45%;
+  color: #fff;
+}
+
+.heroCopy h2 {
+  font-size: clamp(2.15rem, 4vw, 4rem);
+  line-height: 1.06;
+  letter-spacing: -.055em;
+}
+
+.heroCopy p {
+  max-width: 36ch;
+  margin-top: 15px;
+  color: #e4edff;
+  font-size: clamp(.94rem, 1.3vw, 1.08rem);
+}
+
+.heroLine { display: grid; color: #bfdbfe; }
+.heroLine > span { grid-area: 1 / 1; }
+.heroTyping { display: none; }
+
+@media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+  .heroText { color: transparent; }
+  .heroTyping { display: block; }
+}
+
+@media (width < 768px) {
+  .layout { grid-template-columns: minmax(0, 1fr); }
+  .body { padding: 25px clamp(22px, 6vw, 42px); }
+  .hero { display: none; }
+  .support { text-align: center; }
+}

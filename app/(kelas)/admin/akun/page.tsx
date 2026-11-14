@@ -1,14 +1,16 @@
-import Link from "next/link";
 import { createAccount, renameAccount, setAccountActive } from "@/app/admin-actions";
 import { ActionForm } from "@/components/action-form";
+import { Breadcrumb } from "@/components/breadcrumb";
+import { Flash } from "@/components/flash";
 import { requireAdmin } from "@/lib/access";
 import { db } from "@/lib/db";
 import { roleLabels } from "@/lib/roles";
 
 export const metadata = { title: "Kelola akun" };
 
-export default async function AccountsPage() {
+export default async function AccountsPage({ searchParams }: { searchParams: Promise<{ ok?: string }> }) {
   await requireAdmin();
+  const { ok } = await searchParams;
   const accounts = await db.user.findMany({
     orderBy: [{ role: "asc" }, { name: "asc" }],
     select: { id: true, name: true, email: true, role: true, active: true },
@@ -16,7 +18,11 @@ export default async function AccountsPage() {
 
   return (
     <>
-      <Link className="back-link" href="/admin">← Kembali ke dasbor admin</Link>
+      <Flash ok={ok} />
+      <Breadcrumb items={[
+        { href: "/admin", label: "Dasbor admin" },
+        { href: "/admin/akun", label: "Akun" },
+      ]} />
       <header className="page-heading"><p className="eyebrow accent">Administrasi</p><h1>Kelola akun</h1></header>
       <section className="panel form-panel">
         <h2>Buat akun</h2>

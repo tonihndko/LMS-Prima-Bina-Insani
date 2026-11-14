@@ -60,7 +60,60 @@ export async function createAssignment(courseId: string, _state: FormState, form
   const assignment = await db.assignment.create({ data: { courseId, ...fields.data } });
   revalidatePath(coursePath(courseId));
   revalidatePath(coursePath(courseId) + "/latihan");
-  redirect(assignmentPath(courseId, assignment.id));
+  redirect(assignmentPath(courseId, assignment.id) + "?ok=assignment");
+}
+
+export async function updateAssignment(courseId: string, assignmentId: string, _state: FormState, form: FormData): Promise<FormState> {
+  const user = await requireUser();
+  await getTeachingCourse(courseId, user);
+
+  const fields = assignmentSchema.safeParse({
+    title: form.get("title"),
+    instructions: form.get("instructions"),
+  });
+  if (!fields.success) return { error: "Isi judul (maks. 120 karakter) dan instruksi (maks. 4.000 karakter)." };
+
+  // ponytail: instruksi lama tidak diversikan; tambah riwayat versi bila penilaian perlu ditelusuri.
+  const result = await db.assignment.updateMany({ where: { id: assignmentId, courseId }, data: fields.data });
+  if (!result.count) notFound();
+  const path = assignmentPath(courseId, assignmentId);
+  revalidatePath(coursePath(courseId));
+  revalidatePath(coursePath(courseId) + "/latihan");
+  revalidatePath(path);
+  redirect(path + "?ok=assignment-updated");
+}
+
+const followUpSchema = z.object({
+  note: z.string().trim().min(1).max(2000),
+});
+
+function studentPath(courseId: string, studentId: string) {
+  return coursePath(courseId) + "/peserta/" + studentId;
+}
+
+export async function createFollowUp(courseId: string, studentId: string, _state: FormState, form: FormData): Promise<FormState> {
+  const user = await requireUser();
+  await getTeachingCourse(courseId, user);
+  const enrolled = await db.enrollment.findUnique({ where: { courseId_studentId: { courseId, studentId } }, select: { studentId: true } });
+  if (!enrolled) notFound();
+
+  const fields = followUpSchema.safeParse({ note: form.get("note") });
+  if (!fields.success) return { error: "Isi catatan tindak lanjut (maks. 2.000 karakter)." };
+
+  await db.followUp.create({ data: { courseId, studentId, teacherId: user.id, note: fields.data.note } });
+  revalidatePath(studentPath(courseId, studentId));
+  revalidatePath(coursePath(courseId));
+  redirect(studentPath(courseId, studentId) + "?ok=followup");
+}
+
+export async function setFollowUpStatus(courseId: string, studentId: string, followUpId: string, status: "OPEN" | "DONE") {
+  const user = await requireUser();
+  await getTeachingCourse(courseId, user);
+  const result = await db.followUp.updateMany({ where: { id: followUpId, courseId, studentId }, data: { status } });
+  if (!result.count) notFound();
+  revalidatePath(studentPath(courseId, studentId));
+  revalidatePath(coursePath(courseId));
+  redirect(studentPath(courseId, studentId) + "?ok=followup-" + status.toLowerCase());
 }
 
 const answerSchema = z.string().trim().max(5000);
@@ -84,31 +137,27 @@ export async function submitAnswer(courseId: string, assignmentId: string, _stat
   if (error) return { error };
   if (!answer.data && !files.length) return { error: "Isi jawaban teks atau lampirkan berkas." };
 
-  const existing = await db.submission.findUnique({
-    where: { assignmentId_studentId: { assignmentId: assignment.id, studentId: user.id } },
-    select: { id: true },
-  });
-  if (!existing) {
-    try {
-      await db.submission.create({
-        data: {
-          assignmentId: assignment.id,
-          studentId: user.id,
-          answer: answer.data,
-          files: { create: await attachmentRows(files) },
-        },
-      });
-    } catch (error) {
-      if (!(error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002")) {
-        throw error;
-      }
+  try {
+    await db.submission.create({
+      data: {
+        assignmentId: assignment.id,
+        studentId: user.id,
+        answer: answer.data,
+        files: { create: await attachmentRows(files) },
+      },
+    });
+  } catch (error) {
+    // Unique (assignmentId, studentId): satu pengumpulan per latihan, misalnya dari tab lama.
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+      return { error: "Jawaban untuk latihan ini sudah dikumpulkan. Muat ulang halaman untuk melihatnya." };
     }
+    throw error;
   }
   const path = assignmentPath(courseId, assignment.id);
   revalidatePath(coursePath(courseId));
   revalidatePath(coursePath(courseId) + "/latihan");
   revalidatePath(path);
-  redirect(path);
+  redirect(path + "?ok=submitted");
 }
 
 const gradeSchema = z.object({
@@ -136,5 +185,5 @@ export async function gradeSubmission(courseId: string, assignmentId: string, su
   revalidatePath(coursePath(courseId));
   revalidatePath(coursePath(courseId) + "/latihan");
   revalidatePath(path);
-  redirect(path);
+  redirect(path + "?ok=graded");
 }

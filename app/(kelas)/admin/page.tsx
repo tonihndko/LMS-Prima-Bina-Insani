@@ -1,11 +1,14 @@
 import Link from "next/link";
+import { Donut, ScoreBars } from "@/components/charts";
+import { Flash } from "@/components/flash";
 import { requireAdmin } from "@/lib/access";
 import { db } from "@/lib/db";
 
 export const metadata = { title: "Dasbor admin" };
 
-export default async function AdminPage() {
+export default async function AdminPage({ searchParams }: { searchParams: Promise<{ ok?: string }> }) {
   await requireAdmin();
+  const { ok } = await searchParams;
   const [accounts, courses] = await Promise.all([
     db.user.count(),
     db.course.findMany({
@@ -19,10 +22,13 @@ export default async function AdminPage() {
     }),
   ]);
   const participants = courses.reduce((total, course) => total + course._count.enrollments, 0);
+  const allSubmissions = courses.flatMap((course) => course.assignments.flatMap((assignment) => assignment.submissions));
+  const allScores = allSubmissions.filter(({ score }) => score !== null).map(({ score }) => score as number);
   const stats = [["Akun", accounts], ["Kelas", courses.length], ["Penempatan peserta", participants]] as const;
 
   return (
     <>
+      <Flash ok={ok} />
       <header className="course-banner">
         <div className="banner-copy">
           <p className="eyebrow">Administrasi · Data simulasi</p>
@@ -39,7 +45,7 @@ export default async function AdminPage() {
           <div><p className="eyebrow accent">Kelas</p><h2 id="rekap-kelas">Rekap kelas</h2></div>
           <Link className="button secondary compact" href="/admin/kelas">Kelola kelas</Link>
         </div>
-        <div className="panel table-wrap">
+        <div className="panel table-wrap" tabIndex={0} role="region" aria-label="Tabel rekap kelas">
           <table>
             <thead><tr><th scope="col">Kelas</th><th scope="col">Pengajar</th><th scope="col">Peserta</th><th scope="col">Latihan</th><th scope="col">Dinilai / Terkumpul</th></tr></thead>
             <tbody>
@@ -58,6 +64,19 @@ export default async function AdminPage() {
               {!courses.length && <tr><td colSpan={5}>Belum ada kelas.</td></tr>}
             </tbody>
           </table>
+        </div>
+      </section>
+      <section className="section" aria-labelledby="progres-penilaian">
+        <div className="section-heading">
+          <p className="eyebrow accent">Pemantauan</p>
+          <h2 id="progres-penilaian">Progres penilaian</h2>
+        </div>
+        <div className="panel chart-panel">
+          <Donut value={allScores.length} total={allSubmissions.length} label="Jawaban dinilai" />
+          <div>
+            <ScoreBars scores={allScores} />
+            {!allScores.length && <p className="empty">Belum ada nilai yang tersimpan.</p>}
+          </div>
         </div>
       </section>
     </>

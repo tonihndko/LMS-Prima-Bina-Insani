@@ -49,7 +49,7 @@ export async function createAccount(_state: FormState, form: FormData): Promise<
   }
 
   revalidatePath("/admin", "layout");
-  redirect("/admin/akun");
+  redirect("/admin/akun?ok=account");
 }
 
 export async function renameAccount(userId: string, _state: FormState, form: FormData): Promise<FormState> {
@@ -64,7 +64,7 @@ export async function renameAccount(userId: string, _state: FormState, form: For
   if (!result.count) notFound();
 
   revalidatePath("/admin", "layout");
-  redirect("/admin/akun");
+  redirect("/admin/akun?ok=renamed");
 }
 
 export async function setAccountActive(userId: string, active: boolean) {
@@ -80,7 +80,7 @@ export async function setAccountActive(userId: string, active: boolean) {
   });
 
   revalidatePath("/admin", "layout");
-  redirect("/admin/akun");
+  redirect("/admin/akun?ok=" + (active ? "activated" : "deactivated"));
 }
 
 const courseSchema = z.object({
@@ -113,7 +113,7 @@ export async function saveCourse(courseId: string | null, _state: FormState, for
   }
 
   revalidatePath("/admin", "layout");
-  redirect("/admin/kelas/" + id);
+  redirect("/admin/kelas/" + id + "?ok=course");
 }
 
 export async function enrollStudent(courseId: string, _state: FormState, form: FormData): Promise<FormState> {
@@ -130,12 +130,12 @@ export async function enrollStudent(courseId: string, _state: FormState, form: F
 
   await db.enrollment.createMany({ data: { courseId, studentId }, skipDuplicates: true });
   revalidatePath("/admin", "layout");
-  redirect("/admin/kelas/" + courseId);
+  redirect("/admin/kelas/" + courseId + "?ok=enrolled");
 }
 
 export async function removeStudent(courseId: string, studentId: string) {
   await requireAdmin();
   await db.enrollment.deleteMany({ where: { courseId, studentId } });
   revalidatePath("/admin", "layout");
-  redirect("/admin/kelas/" + courseId);
+  redirect("/admin/kelas/" + courseId + "?ok=removed");
 }

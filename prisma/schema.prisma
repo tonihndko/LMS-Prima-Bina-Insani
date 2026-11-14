@@ -28,6 +28,9 @@ model User {
   teaching      Course[]     @relation("CourseTeacher")
   enrollments   Enrollment[]
   submissions   Submission[]
+  completions   MaterialCompletion[]
+  followUps     FollowUp[]          @relation("FollowUpStudent")
+  followUpsMade FollowUp[]          @relation("FollowUpTeacher")
 }
 
 model Session {
@@ -84,6 +87,7 @@ model Course {
   enrollments Enrollment[]
   assignments Assignment[]
   materials   Material[]
+  followUps   FollowUp[]
 
   @@index([teacherId])
 }
@@ -134,8 +138,45 @@ model Material {
   description String
   createdAt   DateTime     @default(now())
   files       Attachment[]
+  // Materi asal bila materi ini hasil pakai ulang dari kelas lain.
+  sourceId    String?
+  source      Material?    @relation("MaterialReuse", fields: [sourceId], references: [id], onDelete: SetNull)
+  copies      Material[]   @relation("MaterialReuse")
+  completions MaterialCompletion[]
 
   @@index([courseId, createdAt])
+}
+
+// Penyelesaian materi berupa konfirmasi mandiri peserta.
+model MaterialCompletion {
+  materialId  String
+  material    Material @relation(fields: [materialId], references: [id], onDelete: Cascade)
+  studentId   String
+  student     User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  completedAt DateTime @default(now())
+
+  @@id([materialId, studentId])
+  @@index([studentId])
+}
+
+enum FollowUpStatus {
+  OPEN
+  DONE
+}
+
+model FollowUp {
+  id        String         @id @default(cuid())
+  courseId  String
+  course    Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  studentId String
+  student   User           @relation("FollowUpStudent", fields: [studentId], references: [id], onDelete: Cascade)
+  teacherId String
+  teacher   User           @relation("FollowUpTeacher", fields: [teacherId], references: [id], onDelete: Cascade)
+  note      String
+  status    FollowUpStatus @default(OPEN)
+  createdAt DateTime       @default(now())
+
+  @@index([courseId, studentId, createdAt])
 }
 
 model Attachment {

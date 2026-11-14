@@ -11,7 +11,7 @@ export function listAssignments(courseId: string, studentId?: string) {
       createdAt: true,
       submissions: {
         where: studentId ? { studentId } : undefined,
-        select: { studentId: true, score: true },
+        select: { studentId: true, score: true, submittedAt: true },
       },
     },
   });

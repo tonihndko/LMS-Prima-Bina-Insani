@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { Breadcrumb } from "@/components/breadcrumb";
+import { Flash } from "@/components/flash";
 import { notFound } from "next/navigation";
 import { submitAnswer } from "@/app/actions";
 import { ActionForm } from "@/components/action-form";
@@ -12,8 +14,15 @@ import { assignmentPath, coursePath, displayDate } from "@/lib/presentation";
 
 export const metadata = { title: "Detail latihan" };
 
-export default async function AssignmentPage({ params }: { params: Promise<{ courseId: string; assignmentId: string }> }) {
+export default async function AssignmentPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ courseId: string; assignmentId: string }>;
+  searchParams: Promise<{ ok?: string }>;
+}) {
   const { courseId, assignmentId } = await params;
+  const { ok } = await searchParams;
   const user = await requireUser();
   const course = await getCourse(courseId, user);
   const isTeacher = course.teacherId === user.id;
@@ -32,11 +41,22 @@ export default async function AssignmentPage({ params }: { params: Promise<{ cou
   const ownSubmission = isTeacher ? null : assignment.submissions[0];
   return (
     <>
-      <Link className="back-link" href={coursePath(courseId)}>← Kembali ke kelas</Link>
+      <Breadcrumb items={[
+        { href: "/kelas", label: "Kelas saya" },
+        { href: coursePath(courseId), label: course.title },
+        { href: coursePath(courseId) + "/latihan", label: "Latihan" },
+        { href: assignmentPath(courseId, assignmentId), label: assignment.title },
+      ]} />
+      <Flash ok={ok} />
       <header className="page-heading">
         <p className="eyebrow accent">{course.title}</p>
         <h1>{assignment.title}</h1>
         {!isTeacher && <Status submission={ownSubmission} />}
+        {isTeacher && (
+          <div className="action-row">
+            <Link className="button secondary compact" href={assignmentPath(courseId, assignmentId) + "/ubah"}>Ubah latihan</Link>
+          </div>
+        )}
       </header>
       <section className="panel text-panel">
         <h2>Instruksi latihan</h2>
