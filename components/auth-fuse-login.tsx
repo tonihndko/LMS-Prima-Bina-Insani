@@ -23,7 +23,7 @@ export function AuthHero() {
 
 interface AuthCardProps {
   action: (state: { error?: string }, form: FormData) => Promise<{ error?: string }>;
-  demoAccounts: { admin: string; teacher: string; student: string; password: string };
+  demoAccounts?: { admin: string; teacher: string; student: string; password: string };
 }
 
 export function AuthCard({ action, demoAccounts }: AuthCardProps) {
@@ -44,7 +44,7 @@ export function AuthCard({ action, demoAccounts }: AuthCardProps) {
           placeholder="Masukkan kata sandi"
         />
       </ActionForm>
-      <details className={styles.demo}>
+      {demoAccounts && <details className={styles.demo}>
         <summary>Lihat akun demo lokal</summary>
         <dl>
           <dt>Admin</dt><dd><code>{demoAccounts.admin}</code></dd>
@@ -52,7 +52,7 @@ export function AuthCard({ action, demoAccounts }: AuthCardProps) {
           <dt>Peserta</dt><dd><code>{demoAccounts.student}</code></dd>
           <dt>Kata sandi</dt><dd><code>{demoAccounts.password}</code></dd>
         </dl>
-      </details>
+      </details>}
     </div>
   );
 }

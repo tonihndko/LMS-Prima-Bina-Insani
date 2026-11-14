@@ -25,7 +25,7 @@ BETTER_AUTH_URL="http://127.0.0.1:3030"
 BETTER_AUTH_SECRET="<nilai acak minimal 32 karakter>"
 ```
 
-Gunakan database demo untuk setup karena perintah tersebut menambahkan akun dan data sintetis. Kata sandi akun demo tersedia pada halaman masuk untuk penggunaan lokal.
+Gunakan database demo untuk setup karena perintah tersebut menambahkan akun dan data sintetis. Kata sandi akun demo tersedia pada halaman masuk untuk penggunaan lokal. Daftar lengkap variabel ada di [.env.example](.env.example).
 
 ## Akun dan skenario
 
@@ -36,13 +36,28 @@ Gunakan database demo untuk setup karena perintah tersebut menambahkan akun dan 
 | Peserta 1 | peserta@primecaps.test |
 | Peserta 2 | peserta2@primecaps.test |
 
-Kata sandi akun demo adalah **PrimeCapsDemo2026!**.
+Kata sandi akun demo lokal adalah **PrimeCapsDemo2026!**. Nilai ini hanya default lokal; instance yang di-deploy memakai `DEMO_PASSWORD` dan tidak menampilkan akun demo di halaman masuk.
 
 1. Masuk sebagai admin untuk mengelola akun, menugaskan pengajar, menempatkan peserta, dan melihat rekap.
 2. Masuk sebagai pengajar. Dari menu Materi, unggah bahan pembelajaran. Dari menu Latihan, buat latihan baru di kelas Dasar Analisis Data.
 3. Keluar, lalu masuk sebagai peserta dan buka materi, lalu kumpulkan jawaban teks, berkas, atau keduanya.
 4. Masuk kembali sebagai pengajar. Buka latihan, pilih jawaban, lalu simpan nilai dan umpan balik.
 5. Masuk sebagai peserta untuk membaca hasil dan melihat perubahan progres.
+
+## Deploy
+
+1. Siapkan PostgreSQL terkelola (misalnya Neon) dan host Node.js.
+2. Isi variabel lingkungan di host: `DATABASE_URL`, `BETTER_AUTH_URL` (URL publik aplikasi), `BETTER_AUTH_SECRET`, dan `DEMO_PASSWORD`.
+3. Dari komputer lokal dengan `DATABASE_URL` mengarah ke database produksi, jalankan migrasi dan seed sekali:
+
+   ```sh
+   npx prisma migrate deploy
+   npx tsx prisma/seed.ts
+   ```
+
+4. Perintah build host: `npm run build` (sudah menjalankan `prisma generate`). Perintah start: `npx next start -p $PORT`.
+
+Unggahan berkas dikirim lewat Server Actions hingga 64 MB per permintaan. Host serverless dengan batas body kecil (misalnya Vercel, sekitar 4,5 MB) akan menolak lampiran besar, jadi pilih host Node.js biasa (misalnya Render) atau turunkan `MAX_FILE_MB` di `lib/file-policy.ts`.
 
 ## Materi dan lampiran
 

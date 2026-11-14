@@ -19,7 +19,8 @@ export default async function LoginPage() {
           <span>Learning Management System</span>
         </header>
         <div className={styles.content}>
-          <AuthCard action={login} demoAccounts={demoAccounts} />
+          {/* Akun demo hanya ditampilkan di lokal; instance yang di-deploy memakai DEMO_PASSWORD. */}
+          <AuthCard action={login} demoAccounts={process.env.NODE_ENV !== "production" ? demoAccounts : undefined} />
         </div>
         <p className={styles.support}>Butuh akun? Hubungi admin kelas.</p>
       </section>
