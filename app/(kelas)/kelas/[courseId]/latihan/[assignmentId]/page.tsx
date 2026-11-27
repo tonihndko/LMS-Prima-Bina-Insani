@@ -98,7 +98,7 @@ export default async function AssignmentPage({
                 <h3>Umpan balik pengajar</h3>
                 <p className="prose">{ownSubmission.feedback}</p>
               </>
-            ) : <p className="muted">Jawabanmu sudah diterima dan sedang menunggu penilaian.</p>}
+            ) : <p className="muted">Jawabanmu sudah diterima dan sedang menunggu diperiksa pengajar.</p>}
           </section>
         </>
       ) : (

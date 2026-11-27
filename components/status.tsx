@@ -10,8 +10,8 @@ export function Status({ submission, dueAt = null }: { submission?: StatusSubmis
   return (
     <span className="status-group">
       {submission.score === null
-        ? <span className="status status-waiting">Sudah dikumpulkan</span>
-        : <span className="status status-done">Sudah dinilai</span>}
+        ? <span className="status status-waiting">Menunggu diperiksa</span>
+        : <span className="status status-done">Sudah diperiksa</span>}
       {late && <span className="status status-late">Terlambat</span>}
     </span>
   );
