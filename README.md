@@ -58,3 +58,7 @@ Berkas demo disimpan di PostgreSQL. Unduhan materi memerlukan akses kelas. Lampi
 Jalankan `npm run check` untuk pemeriksaan TypeScript dan `npm run build` untuk build produksi. `npm run start` menjalankan hasil build pada alamat demo yang sama.
 
 Stack web mengikuti project plan ASAH dengan Next.js, React, dan PostgreSQL. Prisma mengakses basis data dan Better Auth mengelola login serta sesi. Analisis dan pelatihan model berada pada tahap berikutnya. Rencana serving model mengikuti project plan dengan Python dan FastAPI.
+
+## Bagian ASAH dan bahan matkul
+
+Kode di luar folder `matkul/` adalah hasil tim ASAH sesuai project plan. Folder `matkul/` berisi tambahan untuk mata kuliah MBKM (Pemrograman Lanjut, ML, DL, DS) dan tidak dipakai aplikasi. Penjelasan batasnya ada di [matkul/README.md](matkul/README.md).
