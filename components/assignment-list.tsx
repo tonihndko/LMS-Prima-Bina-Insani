@@ -26,9 +26,10 @@ export function AssignmentList({
               <h3><Link href={href}>{assignment.title}</Link></h3>
               <p>{isTeacher
                 ? assignment.submissions.length + " terkumpul · " + assignment.submissions.filter(({ score }) => score !== null).length + " dinilai"
-                : displayDate(assignment.createdAt)}</p>
+                : displayDate(assignment.createdAt)}
+                {assignment.dueAt && " · Tenggat " + displayDate(assignment.dueAt)}</p>
             </div>
-            {!isTeacher && <Status submission={submission} />}
+            {!isTeacher && <Status submission={submission} dueAt={assignment.dueAt} />}
             <Link className="button compact secondary" href={href}>
               {isTeacher ? "Lihat jawaban" : submission ? "Lihat latihan" : "Kerjakan"}
             </Link>

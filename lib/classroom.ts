@@ -9,6 +9,7 @@ export function listAssignments(courseId: string, studentId?: string) {
       id: true,
       title: true,
       createdAt: true,
+      dueAt: true,
       submissions: {
         where: studentId ? { studentId } : undefined,
         select: { studentId: true, score: true, submittedAt: true },

@@ -10,7 +10,8 @@
     "dev": "next dev --hostname 127.0.0.1 --port 3030",
     "build": "prisma generate && next build",
     "start": "next start --hostname 127.0.0.1 --port 3030",
-    "check": "tsc --noEmit"
+    "check": "tsc --noEmit",
+    "test": "vitest run"
   },
   "dependencies": {
     "@better-auth/prisma-adapter": "1.7.19",
@@ -39,6 +40,7 @@
     "@types/react-dom": "^19.0.0",
     "prisma": "^7.0.0",
     "tsx": "^4.0.0",
-    "typescript": "^5.9.0"
+    "typescript": "^5.9.0",
+    "vitest": "^3.2.4"
   }
 }

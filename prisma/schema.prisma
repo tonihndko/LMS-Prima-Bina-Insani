@@ -28,6 +28,10 @@ model User {
   teaching      Course[]     @relation("CourseTeacher")
   enrollments   Enrollment[]
   submissions   Submission[]
+  predictionsAbout  Prediction[] @relation("PredictionStudent")
+  predictionsAsked  Prediction[] @relation("PredictionRequester")
+  evaluationsAbout  Evaluation[] @relation("EvaluationStudent")
+  evaluationsGiven  Evaluation[] @relation("EvaluationTeacher")
   completions   MaterialCompletion[]
   followUps     FollowUp[]          @relation("FollowUpStudent")
   followUpsMade FollowUp[]          @relation("FollowUpTeacher")
@@ -87,6 +91,8 @@ model Course {
   enrollments Enrollment[]
   assignments Assignment[]
   materials   Material[]
+  predictions Prediction[]
+  evaluations Evaluation[]
   followUps   FollowUp[]
 
   @@index([teacherId])
@@ -108,6 +114,8 @@ model Assignment {
   course       Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
   title        String
   instructions String
+  // Tenggat opsional. Jawaban setelah tenggat tetap diterima dan ditandai terlambat.
+  dueAt        DateTime?
   createdAt    DateTime     @default(now())
   submissions  Submission[]
 
@@ -191,4 +199,52 @@ model Attachment {
 
   @@index([materialId])
   @@index([submissionId])
+}
+
+// Status kelulusan tiga kelas sesuai project plan ASAH.
+enum PassStatus {
+  LULUS
+  DIPERTIMBANGKAN
+  TIDAK_LULUS
+}
+
+// Hasil model. Hanya ditambahkan, tidak pernah diubah, dan tidak pernah menimpa Evaluation.
+model Prediction {
+  id            String       @id @default(cuid())
+  courseId      String
+  course        Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  studentId     String
+  student       User         @relation("PredictionStudent", fields: [studentId], references: [id], onDelete: Cascade)
+  requestedById String
+  requestedBy   User         @relation("PredictionRequester", fields: [requestedById], references: [id], onDelete: Cascade)
+  label         PassStatus
+  // Skor dari model (0–1) bila tersedia; bukan peluang terkalibrasi.
+  score         Float?
+  modelVersion  String
+  // Snapshot data yang dikirim ke model saat prediksi dibuat.
+  features      Json
+  createdAt     DateTime     @default(now())
+  evaluations   Evaluation[]
+
+  @@index([courseId, studentId, createdAt])
+}
+
+// Keputusan pengajar. Setiap perubahan menambah baris baru, sehingga riwayat tetap tersimpan.
+// Keputusan terkini = baris terbaru untuk (courseId, studentId).
+model Evaluation {
+  id           String      @id @default(cuid())
+  courseId     String
+  course       Course      @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  studentId    String
+  student      User        @relation("EvaluationStudent", fields: [studentId], references: [id], onDelete: Cascade)
+  teacherId    String
+  teacher      User        @relation("EvaluationTeacher", fields: [teacherId], references: [id], onDelete: Cascade)
+  status       PassStatus
+  reason       String
+  // Prediksi yang ditinjau saat keputusan dibuat (opsional).
+  predictionId String?
+  prediction   Prediction? @relation(fields: [predictionId], references: [id], onDelete: SetNull)
+  createdAt    DateTime    @default(now())
+
+  @@index([courseId, studentId, createdAt])
 }

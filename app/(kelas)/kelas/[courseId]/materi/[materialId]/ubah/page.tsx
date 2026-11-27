@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { updateMaterial } from "@/app/material-actions";
+import { deleteMaterial, updateMaterial } from "@/app/material-actions";
 import { ActionForm } from "@/components/action-form";
 import { FileField } from "@/components/file-field";
 import { getTeachingCourse, requireUser } from "@/lib/access";
@@ -16,7 +16,7 @@ export default async function EditMaterialPage({ params }: { params: Promise<{ c
   const course = await getTeachingCourse(courseId, user);
   const material = await db.material.findFirst({
     where: { id: materialId, courseId },
-    include: { files: { select: attachmentMetadata } },
+    include: { files: { select: attachmentMetadata }, _count: { select: { copies: true, completions: true } } },
   });
   if (!material) notFound();
   const back = coursePath(courseId) + "/materi/" + materialId;
@@ -41,6 +41,16 @@ export default async function EditMaterialPage({ params }: { params: Promise<{ c
             ))}
           </fieldset>
           <FileField label="Tambah berkas" />
+        </ActionForm>
+      </section>
+      <section className="section panel form-panel danger-panel" aria-labelledby="hapus-materi">
+        <h2 id="hapus-materi">Hapus materi</h2>
+        <p className="muted">
+          Materi, {material.files.length} berkasnya, dan {material._count.completions} tanda selesai peserta akan dihapus permanen.
+          {material._count.copies > 0 && " Salinan di " + material._count.copies + " kelas lain tetap ada."}
+        </p>
+        <ActionForm action={deleteMaterial.bind(null, courseId, materialId)} label="Hapus materi" danger>
+          <label className="check-row"><input type="checkbox" name="confirm" value="yes" required /> Saya paham materi ini tidak dapat dikembalikan.</label>
         </ActionForm>
       </section>
     </>

@@ -65,6 +65,12 @@ Setiap materi dan pengumpulan menerima maksimal 3 berkas dengan ukuran hingga 20
 
 Berkas demo disimpan di PostgreSQL. Unduhan materi memerlukan akses kelas. Lampiran pekerjaan hanya dapat diunduh oleh peserta pemilik jawaban dan pengajar kelas tersebut.
 
+## Prediksi dan keputusan kelulusan
+
+Pengajar membuka halaman peserta (dari tabel progres di dashboard kelas) untuk meminta prediksi tiga kelas (Lulus, Dipertimbangkan, Tidak Lulus) lalu mencatat keputusan beserta alasannya. Prediksi dan keputusan disimpan di tabel terpisah: prediksi baru tidak pernah mengubah keputusan, dan setiap perubahan keputusan menambah riwayat. Admin melihat status terkini di halaman administrasi kelas, sedangkan peserta tidak melihat prediksi.
+
+Selama `PREDICTION_API_URL` kosong, prediksi memakai model tiruan berbasis aturan (`lib/prediction-client.ts`) agar alur dapat diuji. Data yang dikirim ke model (`collectFeatures` di `lib/evaluation.ts`) dan format respons masih harus disepakati dengan tim model dan data science sebelum disambungkan ke FastAPI.
+
 ## Struktur dan pemeriksaan
 
 - **app/** berisi halaman App Router dan Server Actions untuk membuat latihan, mengirim jawaban, dan menilai.
@@ -72,6 +78,6 @@ Berkas demo disimpan di PostgreSQL. Unduhan materi memerlukan akses kelas. Lampi
 - **prisma/** berisi skema PostgreSQL, migrasi, dan data awal.
 - **components/** berisi komponen tampilan yang dipakai bersama.
 
-Jalankan `npm run check` untuk pemeriksaan TypeScript dan `npm run build` untuk build produksi. `npm run start` menjalankan hasil build pada alamat demo yang sama.
+Jalankan `npm run check` untuk pemeriksaan TypeScript dan `npm run build` untuk build produksi. `npm test` menjalankan tes otomatis (Vitest) terhadap database terpisah di `TEST_DATABASE_URL`; isi database itu dihapus setiap kali tes berjalan. Dengan Docker, buat database tes sekali dengan `docker compose exec database createdb -U primecaps primecaps_test`, lalu isi `TEST_DATABASE_URL="postgresql://primecaps:primecaps_local@127.0.0.1:15432/primecaps_test"`. `npm run start` menjalankan hasil build pada alamat demo yang sama.
 
 Stack web mengikuti project plan ASAH dengan Next.js, React, dan PostgreSQL. Prisma mengakses basis data dan Better Auth mengelola login serta sesi. Analisis dan pelatihan model berada pada tahap berikutnya. Rencana serving model mengikuti project plan dengan Python dan FastAPI.
