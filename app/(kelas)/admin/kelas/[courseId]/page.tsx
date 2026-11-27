@@ -5,8 +5,10 @@ import { ActionForm } from "@/components/action-form";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { CourseForm } from "@/components/course-form";
 import { Flash } from "@/components/flash";
+import { PassBadge } from "@/components/pass-status";
 import { requireAdmin } from "@/lib/access";
 import { db } from "@/lib/db";
+import { latestReviewByStudent } from "@/lib/evaluation";
 
 export const metadata = { title: "Administrasi kelas" };
 
@@ -20,7 +22,7 @@ export default async function AdminCoursePage({
   await requireAdmin();
   const { courseId } = await params;
   const { ok } = await searchParams;
-  const [course, teachers, candidates] = await Promise.all([
+  const [course, teachers, candidates, review] = await Promise.all([
     db.course.findUnique({
       where: { id: courseId },
       include: {
@@ -46,6 +48,7 @@ export default async function AdminCoursePage({
       select: { id: true, name: true, email: true },
       orderBy: { name: "asc" },
     }),
+    latestReviewByStudent(db, courseId),
   ]);
   if (!course) notFound();
 
@@ -82,7 +85,7 @@ export default async function AdminCoursePage({
         <div className="section-heading"><h2 id="progres-admin">Progres peserta</h2></div>
         <div className="panel table-wrap" tabIndex={0} role="region" aria-label="Tabel progres peserta">
           <table>
-            <thead><tr><th scope="col">Peserta</th><th scope="col">Materi selesai</th><th scope="col">Dikumpulkan</th><th scope="col">Dinilai</th><th scope="col">Penempatan</th></tr></thead>
+            <thead><tr><th scope="col">Peserta</th><th scope="col">Materi selesai</th><th scope="col">Dikumpulkan</th><th scope="col">Dinilai</th><th scope="col">Prediksi</th><th scope="col">Keputusan pengajar</th><th scope="col">Penempatan</th></tr></thead>
             <tbody>
               {course.enrollments.map(({ student, studentId }) => (
                 <tr key={studentId}>
@@ -90,10 +93,12 @@ export default async function AdminCoursePage({
                   <td>{student.completions.length} / {course._count.materials}</td>
                   <td>{student.submissions.length} / {course._count.assignments}</td>
                   <td>{student.submissions.filter(({ score }) => score !== null).length} / {course._count.assignments}</td>
+                  <td><PassBadge status={review.prediction.get(studentId)} /></td>
+                  <td><PassBadge status={review.evaluation.get(studentId)} /></td>
                   <td><form action={removeStudent.bind(null, courseId, studentId)}><button className="button secondary compact" type="submit">Keluarkan dari kelas</button></form></td>
                 </tr>
               ))}
-              {!course.enrollments.length && <tr><td colSpan={5}>Belum ada peserta di kelas ini.</td></tr>}
+              {!course.enrollments.length && <tr><td colSpan={7}>Belum ada peserta di kelas ini.</td></tr>}
             </tbody>
           </table>
         </div>

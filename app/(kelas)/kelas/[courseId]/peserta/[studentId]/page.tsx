@@ -4,6 +4,7 @@ import { createFollowUp, setFollowUpStatus } from "@/app/actions";
 import { ActionForm } from "@/components/action-form";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { Flash } from "@/components/flash";
+import { PassReview } from "@/components/pass-review";
 import { Status } from "@/components/status";
 import { getTeachingCourse, requireUser } from "@/lib/access";
 import { db } from "@/lib/db";
@@ -28,7 +29,7 @@ export default async function StudentProgressPage({
   });
   if (!enrollment) notFound();
 
-  const [materials, assignments, followUps] = await Promise.all([
+  const [materials, assignments, followUps, predictions, evaluations] = await Promise.all([
     db.material.findMany({
       where: { courseId },
       orderBy: [{ createdAt: "asc" }, { id: "asc" }],
@@ -43,6 +44,18 @@ export default async function StudentProgressPage({
       where: { courseId, studentId },
       orderBy: [{ status: "asc" }, { createdAt: "desc" }],
       select: { id: true, note: true, status: true, createdAt: true, teacher: { select: { name: true } } },
+    }),
+    db.prediction.findMany({
+      where: { courseId, studentId },
+      orderBy: { createdAt: "desc" },
+      take: 20,
+      select: { id: true, label: true, score: true, modelVersion: true, features: true, createdAt: true, requestedBy: { select: { name: true } } },
+    }),
+    db.evaluation.findMany({
+      where: { courseId, studentId },
+      orderBy: { createdAt: "desc" },
+      take: 20,
+      select: { id: true, status: true, reason: true, createdAt: true, teacher: { select: { name: true } }, prediction: { select: { label: true } } },
     }),
   ]);
   const { student } = enrollment;
@@ -68,6 +81,8 @@ export default async function StudentProgressPage({
         <article className="stat"><span>Latihan dikumpulkan</span><strong>{submitted} / {assignments.length}</strong></article>
         <article className="stat"><span>Rata-rata nilai</span><strong>{average ?? "–"}</strong></article>
       </div>
+
+      <PassReview courseId={courseId} studentId={studentId} predictions={predictions} evaluations={evaluations} />
 
       <section className="section" aria-labelledby="tindak-lanjut">
         <div className="section-heading"><p className="eyebrow accent">Pendampingan</p><h2 id="tindak-lanjut">Tindak lanjut</h2></div>

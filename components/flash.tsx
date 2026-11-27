@@ -11,6 +11,8 @@ const MESSAGES: Record<string, string> = {
   completed: "Materi ditandai selesai.",
   uncompleted: "Tanda selesai dibatalkan.",
   followup: "Catatan tindak lanjut tersimpan.",
+  prediction: "Prediksi baru tersimpan. Keputusan pengajar tidak berubah.",
+  evaluation: "Keputusan kelulusan tersimpan.",
   "followup-done": "Tindak lanjut ditandai selesai.",
   "followup-open": "Tindak lanjut dibuka kembali.",
   account: "Akun berhasil dibuat.",

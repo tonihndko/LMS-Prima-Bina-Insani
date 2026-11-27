@@ -2,9 +2,11 @@ import Link from "next/link";
 import { AssignmentList } from "@/components/assignment-list";
 import { Donut, Sparkline } from "@/components/charts";
 import { Flash } from "@/components/flash";
+import { PassBadge } from "@/components/pass-status";
 import { listAssignments } from "@/lib/classroom";
 import { getCourse, requireUser } from "@/lib/access";
 import { db } from "@/lib/db";
+import { latestReviewByStudent } from "@/lib/evaluation";
 import { coursePath, lastNDays } from "@/lib/presentation";
 
 export const metadata = { title: "Dashboard kelas" };
@@ -16,7 +18,7 @@ export default async function CoursePage({ params, searchParams }: { params: Pro
   const course = await getCourse(courseId, user);
   const isTeacher = course.teacherId === user.id;
 
-  const [assignments, enrollments, materialCount, completions, openFollowUps] = await Promise.all([
+  const [assignments, enrollments, materialCount, completions, openFollowUps, review] = await Promise.all([
     listAssignments(courseId, isTeacher ? undefined : user.id),
     isTeacher ? db.enrollment.findMany({
       where: { courseId },
@@ -29,6 +31,7 @@ export default async function CoursePage({ params, searchParams }: { params: Pro
       select: { studentId: true },
     }),
     isTeacher ? db.followUp.findMany({ where: { courseId, status: "OPEN" }, select: { studentId: true } }) : [],
+    isTeacher ? latestReviewByStudent(db, courseId) : null,
   ]);
 
   const submissions = assignments.flatMap((assignment) => assignment.submissions);
@@ -73,7 +76,7 @@ export default async function CoursePage({ params, searchParams }: { params: Pro
           <div className="section-heading"><p className="eyebrow accent">Pemantauan</p><h2 id="progres">Progres peserta</h2></div>
           <div className="panel table-wrap" tabIndex={0} role="region" aria-label="Tabel progres peserta">
             <table>
-              <thead><tr><th scope="col">Peserta</th><th scope="col">Materi selesai</th><th scope="col">Dikumpulkan</th><th scope="col">Dinilai</th><th scope="col">Tindak lanjut</th></tr></thead>
+              <thead><tr><th scope="col">Peserta</th><th scope="col">Materi selesai</th><th scope="col">Dikumpulkan</th><th scope="col">Dinilai</th><th scope="col">Tindak lanjut</th><th scope="col">Prediksi</th><th scope="col">Keputusan</th></tr></thead>
               <tbody>
                 {enrollments.length ? enrollments.map(({ studentId, student }) => {
                   const work = submissions.filter((submission) => submission.studentId === studentId);
@@ -84,9 +87,11 @@ export default async function CoursePage({ params, searchParams }: { params: Pro
                       <td>{work.length} / {assignments.length}</td>
                       <td>{work.filter(({ score }) => score !== null).length} / {assignments.length}</td>
                       <td>{openFollowUps.filter((item) => item.studentId === studentId).length || "–"}</td>
+                      <td><PassBadge status={review?.prediction.get(studentId)} /></td>
+                      <td><PassBadge status={review?.evaluation.get(studentId)} /></td>
                     </tr>
                   );
-                }) : <tr><td colSpan={5}>Belum ada peserta di kelas ini.</td></tr>}
+                }) : <tr><td colSpan={7}>Belum ada peserta di kelas ini.</td></tr>}
               </tbody>
             </table>
           </div>
