@@ -37,7 +37,7 @@ export default async function StudentProgressPage({
     db.assignment.findMany({
       where: { courseId },
       orderBy: [{ createdAt: "asc" }, { id: "asc" }],
-      select: { id: true, title: true, submissions: { where: { studentId }, select: { id: true, score: true } } },
+      select: { id: true, title: true, dueAt: true, submissions: { where: { studentId }, select: { id: true, score: true, submittedAt: true } } },
     }),
     db.followUp.findMany({
       where: { courseId, studentId },
@@ -107,7 +107,7 @@ export default async function StudentProgressPage({
                   <h3>{assignment.title}</h3>
                   {submission?.score != null && <p>Nilai {submission.score}/100</p>}
                 </div>
-                <Status submission={submission} />
+                <Status submission={submission} dueAt={assignment.dueAt} />
                 {submission && (
                   <Link className="button secondary compact" href={assignmentPath(courseId, assignment.id) + "/jawaban/" + submission.id}>Lihat jawaban</Link>
                 )}

@@ -10,7 +10,7 @@ import { attachmentRows, readUploads } from "@/lib/attachments";
 import { getTeachingCourse, requireUser } from "@/lib/access";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { assignmentPath, coursePath } from "@/lib/presentation";
+import { assignmentPath, coursePath, parseJakartaInput } from "@/lib/presentation";
 
 type FormState = { error?: string };
 
@@ -45,17 +45,34 @@ export async function logout() {
 const assignmentSchema = z.object({
   title: z.string().trim().min(1).max(120),
   instructions: z.string().trim().min(1).max(4000),
+  // Kosong berarti tanpa tenggat.
+  dueAt: z.string().trim().transform((value, ctx) => {
+    if (!value) return null;
+    const date = parseJakartaInput(value);
+    if (!date) {
+      ctx.addIssue({ code: "custom", message: "invalid" });
+      return z.NEVER;
+    }
+    return date;
+  }),
 });
+
+function readAssignment(form: FormData) {
+  return assignmentSchema.safeParse({
+    title: form.get("title"),
+    instructions: form.get("instructions"),
+    dueAt: form.get("dueAt") ?? "",
+  });
+}
+
+const assignmentError = "Isi judul (maks. 120 karakter), instruksi (maks. 4.000 karakter), dan tenggat yang valid bila diisi.";
 
 export async function createAssignment(courseId: string, _state: FormState, form: FormData): Promise<FormState> {
   const user = await requireUser();
   await getTeachingCourse(courseId, user);
 
-  const fields = assignmentSchema.safeParse({
-    title: form.get("title"),
-    instructions: form.get("instructions"),
-  });
-  if (!fields.success) return { error: "Isi judul (maks. 120 karakter) dan instruksi (maks. 4.000 karakter)." };
+  const fields = readAssignment(form);
+  if (!fields.success) return { error: assignmentError };
 
   const assignment = await db.assignment.create({ data: { courseId, ...fields.data } });
   revalidatePath(coursePath(courseId));
@@ -67,11 +84,8 @@ export async function updateAssignment(courseId: string, assignmentId: string, _
   const user = await requireUser();
   await getTeachingCourse(courseId, user);
 
-  const fields = assignmentSchema.safeParse({
-    title: form.get("title"),
-    instructions: form.get("instructions"),
-  });
-  if (!fields.success) return { error: "Isi judul (maks. 120 karakter) dan instruksi (maks. 4.000 karakter)." };
+  const fields = readAssignment(form);
+  if (!fields.success) return { error: assignmentError };
 
   // ponytail: instruksi lama tidak diversikan; tambah riwayat versi bila penilaian perlu ditelusuri.
   const result = await db.assignment.updateMany({ where: { id: assignmentId, courseId }, data: fields.data });

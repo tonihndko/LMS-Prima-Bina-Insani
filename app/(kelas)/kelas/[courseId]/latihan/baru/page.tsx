@@ -23,6 +23,8 @@ export default async function CreateAssignmentPage({ params }: { params: Promise
         <ActionForm action={createAssignment.bind(null, courseId)} label="Simpan latihan">
           <label htmlFor="title">Judul latihan<input id="title" name="title" maxLength={120} required placeholder="Contoh: Membaca tabel frekuensi" /></label>
           <label htmlFor="instructions">Instruksi<textarea id="instructions" name="instructions" rows={7} maxLength={4000} required /></label>
+          <label htmlFor="dueAt">Tenggat (opsional, WIB)<input id="dueAt" name="dueAt" type="datetime-local" /></label>
+          <p className="muted small">Jawaban setelah tenggat tetap diterima dan ditandai terlambat.</p>
         </ActionForm>
       </section>
     </>

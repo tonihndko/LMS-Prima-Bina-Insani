@@ -51,7 +51,8 @@ export default async function AssignmentPage({
       <header className="page-heading">
         <p className="eyebrow accent">{course.title}</p>
         <h1>{assignment.title}</h1>
-        {!isTeacher && <Status submission={ownSubmission} />}
+        {assignment.dueAt && <p className="muted">Tenggat {displayDate(assignment.dueAt)}</p>}
+        {!isTeacher && <Status submission={ownSubmission} dueAt={assignment.dueAt} />}
         {isTeacher && (
           <div className="action-row">
             <Link className="button secondary compact" href={assignmentPath(courseId, assignmentId) + "/ubah"}>Ubah latihan</Link>
@@ -73,7 +74,7 @@ export default async function AssignmentPage({
                   <h3>{submission.student.name}</h3>
                   <p>Dikirim {displayDate(submission.submittedAt)}{submission.score !== null ? " · Nilai " + submission.score + "/100" : ""}</p>
                 </div>
-                <Status submission={submission} />
+                <Status submission={submission} dueAt={assignment.dueAt} />
                 <Link className="button compact secondary" href={assignmentPath(courseId, assignmentId) + "/jawaban/" + submission.id}>
                   {submission.score === null ? "Beri nilai" : "Lihat penilaian"}
                 </Link>
@@ -104,6 +105,9 @@ export default async function AssignmentPage({
         <section className="section panel form-panel">
           <h2>Kumpulkan jawaban</h2>
           <p className="muted">Kirim jawaban teks, berkas, atau keduanya. Setiap latihan menerima satu pengumpulan.</p>
+          {assignment.dueAt && assignment.dueAt < new Date() && (
+            <p className="note-box" role="note">Tenggat sudah lewat. Jawabanmu tetap diterima, tetapi akan ditandai terlambat.</p>
+          )}
           <ActionForm action={submitAnswer.bind(null, courseId, assignmentId)} label="Kirim jawaban">
             <label htmlFor="answer">Jawaban<textarea id="answer" name="answer" rows={7} maxLength={5000} placeholder="Tulis jawabanmu di sini…" /></label>
             <FileField label="Lampirkan berkas pekerjaan" />

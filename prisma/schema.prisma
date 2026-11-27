@@ -108,6 +108,8 @@ model Assignment {
   course       Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
   title        String
   instructions String
+  // Tenggat opsional. Jawaban setelah tenggat tetap diterima dan ditandai terlambat.
+  dueAt        DateTime?
   createdAt    DateTime     @default(now())
   submissions  Submission[]
 
