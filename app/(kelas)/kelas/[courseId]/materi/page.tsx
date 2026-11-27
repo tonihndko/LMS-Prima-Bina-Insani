@@ -1,12 +1,20 @@
 import Link from "next/link";
+import { Flash } from "@/components/flash";
 import { getCourse, requireUser } from "@/lib/access";
 import { db } from "@/lib/db";
 import { coursePath, displayDate } from "@/lib/presentation";
 
 export const metadata = { title: "Materi" };
 
-export default async function MaterialsPage({ params }: { params: Promise<{ courseId: string }> }) {
+export default async function MaterialsPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ courseId: string }>;
+  searchParams: Promise<{ ok?: string }>;
+}) {
   const { courseId } = await params;
+  const { ok } = await searchParams;
   const user = await requireUser();
   const course = await getCourse(courseId, user);
   const materials = await db.material.findMany({
@@ -21,6 +29,7 @@ export default async function MaterialsPage({ params }: { params: Promise<{ cour
 
   return (
     <>
+      <Flash ok={ok} />
       <header className="page-heading section-toolbar">
         <div><p className="eyebrow accent">{course.title}</p><h1>Materi</h1><p className="muted">Berkas pembelajaran untuk kelas ini.</p></div>
         {user.role === "TEACHER" && <Link className="button primary" href={path + "/baru"}>Unggah materi</Link>}

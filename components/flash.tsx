@@ -6,6 +6,8 @@ const MESSAGES: Record<string, string> = {
   "assignment-updated": "Latihan diperbarui.",
   "material-updated": "Materi diperbarui.",
   "material-reused": "Materi disalin ke kelas ini.",
+  "material-deleted": "Materi dihapus.",
+  "assignment-deleted": "Latihan dihapus.",
   completed: "Materi ditandai selesai.",
   uncompleted: "Tanda selesai dibatalkan.",
   followup: "Catatan tindak lanjut tersimpan.",

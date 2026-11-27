@@ -124,3 +124,15 @@ export async function setMaterialCompleted(courseId: string, materialId: string,
   refresh(courseId, materialId);
   redirect(materialPath(courseId, materialId) + "?ok=" + (completed ? "completed" : "uncompleted"));
 }
+
+export async function deleteMaterial(courseId: string, materialId: string, _state: FormState, form: FormData): Promise<FormState> {
+  const user = await requireUser();
+  await getTeachingCourse(courseId, user);
+  if (form.get("confirm") !== "yes") return { error: "Centang konfirmasi untuk menghapus materi." };
+
+  // Berkas dan tanda selesai ikut terhapus (cascade). Salinan di kelas lain tetap ada; sourceId-nya menjadi kosong.
+  const result = await db.material.deleteMany({ where: { id: materialId, courseId } });
+  if (!result.count) notFound();
+  refresh(courseId);
+  redirect(coursePath(courseId) + "/materi?ok=material-deleted");
+}

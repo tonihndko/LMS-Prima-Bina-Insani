@@ -83,6 +83,24 @@ export async function updateAssignment(courseId: string, assignmentId: string, _
   redirect(path + "?ok=assignment-updated");
 }
 
+export async function deleteAssignment(courseId: string, assignmentId: string, _state: FormState, form: FormData): Promise<FormState> {
+  const user = await requireUser();
+  await getTeachingCourse(courseId, user);
+  if (form.get("confirm") !== "yes") return { error: "Centang konfirmasi untuk menghapus latihan." };
+
+  // Latihan yang sudah punya jawaban tidak dihapus agar nilai peserta tidak ikut hilang.
+  // Syarat "tanpa jawaban" ada di klausa WHERE, jadi jawaban yang masuk bersamaan tidak ikut terhapus.
+  const result = await db.assignment.deleteMany({ where: { id: assignmentId, courseId, submissions: { none: {} } } });
+  if (!result.count) {
+    const exists = await db.assignment.findFirst({ where: { id: assignmentId, courseId }, select: { id: true } });
+    if (!exists) notFound();
+    return { error: "Latihan ini sudah memiliki jawaban peserta, jadi tidak dapat dihapus agar nilai tidak hilang." };
+  }
+  revalidatePath(coursePath(courseId));
+  revalidatePath(coursePath(courseId) + "/latihan");
+  redirect(coursePath(courseId) + "/latihan?ok=assignment-deleted");
+}
+
 const followUpSchema = z.object({
   note: z.string().trim().min(1).max(2000),
 });

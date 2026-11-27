@@ -118,6 +118,10 @@ small { font-size: .84rem; }
 .button.on-banner:hover { background: #fde68a; }
 .button.secondary { border-color: var(--line); background: #fff; color: #1d4ed8; }
 .button.secondary:hover { background: #f0f6ed; }
+.button.danger { background: #b91c1c; color: #fff; }
+.button.danger:hover:not(:disabled) { background: #991b1b; }
+.danger-panel { border-color: #fecaca; }
+.danger-panel h2 { color: #b91c1c; }
 .button.compact { min-height: 34px; padding: 7px 11px; font-size: .81rem; flex-shrink: 0; }
 .status { display: inline-flex; align-items: center; gap: 5px; border-radius: 999px; padding: 4px 9px; font-size: .74rem; font-weight: 650; line-height: 1.5; }
 .status::before { content: ""; width: 6px; height: 6px; border-radius: 100%; background: currentColor; flex: 0 0 auto; }

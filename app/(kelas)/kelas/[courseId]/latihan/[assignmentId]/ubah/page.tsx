@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { updateAssignment } from "@/app/actions";
+import { deleteAssignment, updateAssignment } from "@/app/actions";
 import { ActionForm } from "@/components/action-form";
 import { getTeachingCourse, requireUser } from "@/lib/access";
 import { db } from "@/lib/db";
@@ -34,6 +34,21 @@ export default async function EditAssignmentPage({ params }: { params: Promise<{
           <label htmlFor="title">Judul latihan<input id="title" name="title" maxLength={120} required defaultValue={assignment.title} /></label>
           <label htmlFor="instructions">Instruksi<textarea id="instructions" name="instructions" rows={7} maxLength={4000} required defaultValue={assignment.instructions} /></label>
         </ActionForm>
+      </section>
+      <section className="section panel form-panel danger-panel" aria-labelledby="hapus-latihan">
+        <h2 id="hapus-latihan">Hapus latihan</h2>
+        {assignment._count.submissions > 0 ? (
+          <p className="muted">
+            Latihan ini tidak dapat dihapus karena sudah memiliki {assignment._count.submissions} jawaban peserta. Menghapusnya akan menghilangkan nilai dan umpan balik.
+          </p>
+        ) : (
+          <>
+            <p className="muted">Belum ada jawaban untuk latihan ini. Latihan akan dihapus permanen.</p>
+            <ActionForm action={deleteAssignment.bind(null, courseId, assignmentId)} label="Hapus latihan" danger>
+              <label className="check-row"><input type="checkbox" name="confirm" value="yes" required /> Saya paham latihan ini tidak dapat dikembalikan.</label>
+            </ActionForm>
+          </>
+        )}
       </section>
     </>
   );
